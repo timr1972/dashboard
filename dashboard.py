@@ -11,7 +11,7 @@ seed(1)
 
 # if set to 1 do not use CanBus
 standalone = 0
-max_counter = 2000
+max_counter = 5000
 
 try:
     bus = can.interface.Bus(channel='can0', bustype='socketcan_native', can_filters=[{"can_id": 0, "can_mask": 100, "extended": True}])
@@ -21,15 +21,19 @@ except OSError:
 
 try:
     pygame.display.init()
+    pygame.font.init()
     (width, height) = (640, 480)
     screen = pygame.display.set_mode((width, height))
     pygame.mouse.set_visible(False)
-    pygame.font.init()
     FPSCLOCK = pygame.time.Clock()
     #myfont = pygame.font.SysFont('MS Comic Sans', 62)
     datafont = pygame.font.Font('/home/pi/python/Righteous-Regular.ttf', 16)
     speedofont = pygame.font.Font('/home/pi/python/DSEG7ClassicMini-Bold.ttf', 96)
     myfont2 = pygame.font.Font('/home/pi/python/Righteous-Regular.ttf', 36)
+except Exception as e:
+    print ('Other error or exception')
+    print(e)
+    exit()
 except OSError:
     print('Pygame initialisation issue.')
     raise
@@ -52,6 +56,7 @@ EGT = 0
 SPEED = 0
 AFR1 = 0
 AFR2 = 0
+shift_point = 5650
 
 map_names = ['Loud','Road','Test']
 x = 50
@@ -61,6 +66,8 @@ height = 60
 vel = 5
 pointer_width = 5
 counter = 0
+update_screen_time = pygame.time.get_ticks()
+screen_update_interval = 100 # minor information update interval in ms
 
 # Define some colors
 BLACK = ( 0, 0, 0)
@@ -72,65 +79,46 @@ YELLOW = ( 255, 255, 0)
 SILVER = ( 192, 192, 192)
 TURQUOISE = ( 64, 224, 208)
 
-def HexToDec(hexString):
-  decValue = 0
-  nextInt = 0
-  #print(hexString)
-#  for x in range(len(str(hexString))):
-#    nextInt = str(hexString[x])
-#    if nextInt >= 48 and nextInt <= 57:
-#      nextInt = map(nextInt, 48, 57, 0, 9)
-#    if nextInt >= 65 and nextInt <= 70:
-#      nextInt = map(nextInt, 65, 70, 10, 15)
-#    if nextInt >= 97 and nextInt <= 102:
-#      nextInt = map(nextInt, 97, 102, 10, 15)
-#    nextInt = constrain(nextInt, 0, 15)
-#    decValue = (decValue * 16) + nextInt
-    #print("-")
-  return decValue
-
+def fuel_guage():
+    pygame.draw.rect(screen,GREEN,(10,150,35,205),2)
+    img = datafont.render( 'Fuel' , True, TURQUOISE, BLACK)
+    rect = img.get_rect()
+    rect.topleft = (10,360)
+    screen.blit(img,rect)
+    pygame.draw.rect(screen, GREEN, pygame.Rect(10, 220, 35, 135))
+        
+def oil_pressure():
+    pygame.draw.rect(screen,BLUE,(580,150,35,205),2)
+    img = datafont.render( 'Oil P' , True, TURQUOISE, BLACK)
+    rect = img.get_rect()
+    rect.topleft = (580,360)
+    screen.blit(img,rect)
+    
 def speed_function(speed):
     # SPEED gauge
-    img = speedofont.render(str(speed), True, WHITE, BLACK)
+    # Speedo 320,200
+    img = speedofont.render(str(speed), True, WHITE )
     rect = img.get_rect()
     rect.topright = (320, 200)
+    pygame.draw.rect(screen,WHITE,(100,180,230,140),3)
     screen.blit(img,rect)
-    #pygame.draw.circle(screen, RED, [120, 240], 120, 3)
-    #pygame.draw.line(screen, BLUE, startpoint, current_endpoint, pointer_width)
-    #textsurface_SPEED = myfont.render(str(run_count), True, RED, BLACK)
-    #textRect_SPEED = textsurface_SPEED.get_rect()
-    #textRect_SPEED.center = (120, 320)
-    #screen.blit(textsurface_SPEED,textRect_SPEED)
 
 def gear_function(gear):
-    # SPEED gauge
+    # Gear Indicator 450,200
     pygame.draw.rect(screen,WHITE,(440,180,100,140),3)
+    # Gear Indicator
     img = speedofont.render(str(gear), True, YELLOW, BLACK)
     rect = img.get_rect()
     rect.topleft = (450, 200)
     screen.blit(img,rect)
-    #pygame.draw.circle(screen, RED, [120, 240], 120, 3)
-    #pygame.draw.line(screen, BLUE, startpoint, current_endpoint, pointer_width)
-    #textsurface_SPEED = myfont.render(str(run_count), True, RED, BLACK)
-    #textRect_SPEED = textsurface_SPEED.get_rect()
-    #textRect_SPEED.center = (120, 320)
-    #screen.blit(textsurface_SPEED,textRect_SPEED)
-    
-def rpm_function():
-    # RPM gauge
-    pygame.draw.circle(screen, BLUE, [500, 240], 120, 3)
-    pygame.draw.line(screen, RED, startpoint_2, current_endpoint_2, pointer_width)
-    textsurface_RPM = myfont2.render(str(run_count*100), True, RED, BLACK)
-    textRect_RPM = textsurface_RPM.get_rect()
-    textRect_RPM.center = (500, 320)
-    screen.blit(textsurface_RPM,textRect_RPM)
 
 def rpm_line_function(rpm):
     # RPM Range is 0-7500
     # screen width = 640
     # 640/7500 = 0.85pixels per rpm
-    shift_point = 5650
-    
+    # RPM Seperator
+    pygame.draw.line(screen, SILVER, (0,65), (640,65), 1)
+    pygame.draw.rect(screen, BLACK, pygame.Rect(10, 10, (640), 50))
     # Less than shiftpoint minus 500 = Green
     if rpm <= shift_point - 500:
         colour = (0,255,0) # Green
@@ -140,100 +128,76 @@ def rpm_line_function(rpm):
         colour = (255,0,0) # Red
     # Drawing Rectangle
     pygame.draw.rect(screen, colour, pygame.Rect(10, 10, (rpm/12), 50))
-    textsurface_RPM_bar = myfont2.render(str(rpm), True, BLACK)
+    textsurface_RPM_bar = myfont2.render(str(rpm), True, WHITE)
     textRect_RPM_bar = textsurface_RPM_bar.get_rect()
-    textRect_RPM_bar.center = (80, 35)
+    textRect_RPM_bar.center = (80, 30)
     screen.blit(textsurface_RPM_bar,textRect_RPM_bar)
+# ------------------------------------------------------------------------
+# ecu map      | IAT Temp C     | TPS %      | BARO        | Coil On
+# Battery    v | CLT Temp C     | AFR        | Ign BTDC    | Inj dur
+#
+# 10            150              290          430           550
 
-def ecuMap_function(map_number):
-    img = datafont.render('ECU Map: ' + map_names[map_number], True, TURQUOISE, BLACK)
-    rect = img.get_rect()
-    rect.topleft = (10, 430)
-    screen.blit(img,rect)
+# Lower dash positions
+lower_gauge_h = [5, 135, 270, 360, 500]
+lower_gauge_v = [420, 455]
 
-def iat_function(iat):
-    img = datafont.render('Air Temp: ' + str(iat) + ' C', True, TURQUOISE, BLACK)
+def lower_data(top, left, data):
+    img = datafont.render( data , True, TURQUOISE, BLACK)
     rect = img.get_rect()
-    rect.topleft = (10, 455)
-    screen.blit(img,rect)
-
-def clt_function(clt):
-    img = datafont.render('CLT Temp: ' + str(clt) + ' C', True, TURQUOISE, BLACK)
-    rect = img.get_rect()
-    rect.topleft = (150, 430)
-    screen.blit(img,rect)
-
-def battery_function(battery):
-    img = datafont.render('Battery: ' + str(round(battery,2)) + ' v', True, TURQUOISE, BLACK)
-    rect = img.get_rect()
-    rect.topleft = (150, 455)
-    screen.blit(img,rect)
-
-def tps_function(tps):
-    img = datafont.render('TPS: ' + str(tps) + ' %', True, TURQUOISE, BLACK)
-    rect = img.get_rect()
-    rect.topleft = (290, 430)
-    screen.blit(img,rect)
-
-def baro_function(baro):
-    img = datafont.render('BARO: ' + str(baro) + ' mB', True, TURQUOISE, BLACK)
-    rect = img.get_rect()
-    rect.topleft = (290, 455)
-    screen.blit(img,rect)
-
-def coil_function(coil_on):
-    img = datafont.render('Coil On: ' + str(coil_on) + ' ms', True, TURQUOISE, BLACK)
-    rect = img.get_rect()
-    rect.topleft = (430, 430)
-    screen.blit(img,rect)
-
-def afr1_function(afr1):
-    img = datafont.render('AFR: ' + str(afr1), True, TURQUOISE, BLACK)
-    rect = img.get_rect()
-    rect.topleft = (430, 455)
-    screen.blit(img,rect)
-
-def air_function(air):
-    img = datafont.render('IAT: ' + str(air) + ' ms', True, TURQUOISE, BLACK)
-    rect = img.get_rect()
-    rect.topleft = (550, 430)
-    screen.blit(img,rect)
-
-def ign_adv_function(ign_adv):
-    img = datafont.render('Ign: ' + str(ign_adv) + ' BTDC', True, TURQUOISE, BLACK)
-    rect = img.get_rect()
-    rect.topleft = (550, 455)
+    rect.topleft = (lower_gauge_h[top], lower_gauge_v[left])
     screen.blit(img,rect)
 
 def extra_lines():
-    pygame.draw.line(screen, SILVER, (0,425), (640,425), 1)
-    pygame.draw.line(screen, SILVER, (0,450), (640,450), 1)
-    pygame.draw.line(screen, SILVER, (0,475), (640,475), 1)
-    pygame.draw.line(screen, SILVER, (145,425), (145,475), 1)
-    pygame.draw.line(screen, SILVER, (285,425), (285,475), 1)
-    pygame.draw.line(screen, SILVER, (425,425), (425,475), 1)
-    pygame.draw.line(screen, SILVER, (605,425), (605,475), 1)
+    # Lower Details
+    line_middle = ((lower_gauge_v[0] +lower_gauge_v[1])/2)+5
+    pygame.draw.line(screen, SILVER, ( 0, lower_gauge_v[0]-10 ), ( 640, lower_gauge_v[0]-10 ), 1)
+    pygame.draw.line(screen, SILVER, ( 0, line_middle ), ( 640, line_middle  ), 1)
+    pygame.draw.line(screen, SILVER, ( 0, lower_gauge_v[1]+20 ), ( 640, lower_gauge_v[1]+20 ), 1)
+    pygame.draw.line(screen, SILVER, ( lower_gauge_h[1]-5, lower_gauge_v[0]-10 ), (lower_gauge_h[1]-5, lower_gauge_v[1]+20), 1)
+    pygame.draw.line(screen, SILVER, ( lower_gauge_h[2]-5, lower_gauge_v[0]-10 ), (lower_gauge_h[2]-5, lower_gauge_v[1]+20), 1) #(285,425), (285,475), 1)
+    pygame.draw.line(screen, SILVER, ( lower_gauge_h[3]-5, lower_gauge_v[0]-10 ), (lower_gauge_h[3]-5, lower_gauge_v[1]+20), 1) #(425,425), (425,475), 1)
+    pygame.draw.line(screen, SILVER, ( lower_gauge_h[4]-5, lower_gauge_v[0]-10 ), (lower_gauge_h[4]-5, lower_gauge_v[1]+20), 1) #(605,425), (605,475), 1)
+ 
+def UpdateScreen_Loop():
+    # Change this to intermittent changes
+    lower_data(0, 0, 'ECU Map: ' + map_names[ECU_MAP] )
+    lower_data(1, 0, 'IAT: ' + str(randint(5, 45)) + ' C') #map_names[ECU_MAP] )
+    lower_data(2, 0, 'TPS: ' + str(TPS) + ' %')
+    lower_data(3, 0, 'P: ' + str(BARO) + ' mbar')
+    lower_data(4, 0, 'Coil On: ' + str(COIL_ON) + ' ms')
+    lower_data(0, 1, 'Battery: ' + str(BATTERY) + ' v')
+    lower_data(1, 1, 'CLT: ' + str(randint(0, 105)) + ' C') #CLT) + ' C')
+    lower_data(2, 1, 'AFR1: ' + str(AFR1))
+    lower_data(3, 1, 'Ign: ' + str(IGN_ADV) + ' BTDC')
+    lower_data(4, 1, 'INJ: ' + str(INJ_DUR) + ' %')
+    fuel_guage()
+    oil_pressure()
+
+    # Not used
+    # egt_function(EGT)
+    # afr2_function(AFR2)
+    # status_function(STATUS)
+    # error_function(ERRORS)
+    # pri_inj_function(PRI_INJ)
+    # sec_inj_function(SEC_INJ)
+    # map_function(MAP)
         
-startpoint = pygame.math.Vector2(120, 240) # Center Point of arc
-startpoint_2 = pygame.math.Vector2(500, 240) # Center Point of arc
-endpoint = pygame.math.Vector2(80, 0) # Length of the arm
-# 0 = Point to the right
-# 90 = point down, the rest you can work out
-angle = 135 # Start Angle 90+45
+
 done = False
 run_count = 0
-   
+
+
 try:
   print('Main routine starting ')
   while counter < max_counter:
-    # The current endpoint is the startpoint vector + the
-    # rotated original endpoint vector.
-    # current_endpoint = startpoint + endpoint.rotate(angle)
-    # current_endpoint_2 = startpoint_2 + endpoint.rotate(angle)
-    # pygame.draw.line(screen, BLACK, startpoint, current_endpoint, 3)
-    # pygame.draw.line(screen, BLACK, startpoint_2, current_endpoint_2, 3)
-    screen.fill((0, 0, 0))
-    
+    if update_screen_time:
+        if (pygame.time.get_ticks() - update_screen_time) > screen_update_interval:
+            screen.fill((0, 0, 0))
+            UpdateScreen_Loop()
+            extra_lines()
+            update_screen_time = pygame.time.get_ticks()
+            
     if standalone==0:
         message = bus.recv()
         #print(message)
@@ -279,7 +243,7 @@ try:
             # Coil On Time is char 7
             #
             cString = message.data[7]
-            COIL_ON = cString*0.0488
+            COIL_ON = round(cString*0.0488,2)
             s = 'Coil On=' + str(COIL_ON) + ' ms '
         
         # 0x1001
@@ -303,7 +267,7 @@ try:
             aString = '{:08b}'.format(message.data[2])       # MSB
             bString = '{:08b}'.format(message.data[3])[::-1] # LSB
             cString = aString + bString
-            SPEED = round(int(cString,2)*(2.25/256),0)
+            SPEED = round(int(cString,2)*(2.25/256))
             s = 'SPEED=' + str(SPEED) + ' MPH '
             #
             # AFR1
@@ -403,37 +367,16 @@ try:
             s += ' ECU_MAP ' + map_names[ECU_MAP] + ' '
             # Battery = 8
             cString = message.data[7]
-            BATTERY = cString/11
+            BATTERY = round(cString/11,2)
             s += ' BATTERY=' + str(BATTERY) + 'v '
+
+
         
-        # 0x1000
-        rpm_line_function(RPM)
-        # map_function(MAP)
-        baro_function(BARO)
-        tps_function(TPS)
-        coil_function(COIL_ON)
+        # Instant Update
+        speed_function(randint(100, 150)) #(SPEED)
+        rpm_line_function(randint(900, 7500)) #RPM)
+        gear_function(randint(1, 6)) #GEAR)
         
-        # 0x1001
-        #egt_function(EGT)
-        speed_function(SPEED)
-        afr1_function(AFR1)
-        #afr2_function(AFR2)
-        
-        # 0x1002
-        # status_function(STATUS)
-        # error_function(ERRORS)
-        # pri_inj_function(PRI_INJ)
-        # sec_inj_function(SEC_INJ)
-        
-        # 0x1003
-        air_function(AIR)
-        clt_function(CLT)
-        #aux_function(AUX)
-        ign_adv_function(IGN_ADV)
-        #inj_dur_function(INJ_DUR)
-        gear_function(GEAR)
-        ecuMap_function(ECU_MAP)
-        battery_function(BATTERY)
     else : # Standalone Mode
       # Demo mode so provide data            
       speed_function(randint(0, 150))
@@ -444,14 +387,10 @@ try:
       clt_function(randint(0, 105))
       air_function(randint(0, 35))
       #time.sleep(0.5)
-    
-    # Always draw the lines
-    extra_lines()
 
     pygame.display.flip()
-    FPSCLOCK.tick(60)
+    FPSCLOCK.tick(30) # set to 30 FPS
     counter += 1
-    # print(str(counter))
 
 except KeyboardInterrupt:
   print('\n'), counter
