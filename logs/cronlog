@@ -1,6 +1,6 @@
-sudo: unable to resolve host bcdash: Temporary failure in name resolution
+sudo: unable to resolve host bcdash: Name or service not known
 pygame 2.0.1 (SDL 2.0.9, Python 3.7.3)
 Hello from the pygame community. https://www.pygame.org/contribute.html
 Main routine starting 
 
-Finished 2000
+Finished 5000
