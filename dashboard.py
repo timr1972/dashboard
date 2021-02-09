@@ -193,14 +193,19 @@ try:
   while counter < max_counter:
     if update_screen_time:
         if (pygame.time.get_ticks() - update_screen_time) > screen_update_interval:
+            # only repaint the full screen every xms (See Screen_update_interval)
             screen.fill((0, 0, 0))
             UpdateScreen_Loop()
             extra_lines()
             update_screen_time = pygame.time.get_ticks()
+    # Instant Update
+    # *** Using dummy data atm ***
+    speed_function(randint(100, 150)) #(SPEED)
+    rpm_line_function(randint(900, 7500)) #RPM)
+    gear_function(randint(1, 6)) #GEAR)
             
     if standalone==0:
         message = bus.recv()
-        #print(message)
         # 0x1000
         #  0:1 RPM
         #  2:3 MAP (Manifold Air Pressure)  
@@ -369,13 +374,6 @@ try:
             cString = message.data[7]
             BATTERY = round(cString/11,2)
             s += ' BATTERY=' + str(BATTERY) + 'v '
-
-
-        
-        # Instant Update
-        speed_function(randint(100, 150)) #(SPEED)
-        rpm_line_function(randint(900, 7500)) #RPM)
-        gear_function(randint(1, 6)) #GEAR)
         
     else : # Standalone Mode
       # Demo mode so provide data            
