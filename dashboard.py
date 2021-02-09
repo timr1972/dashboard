@@ -1,4 +1,5 @@
 # Import the pygame library and initialise the game engine
+from dash_config import *
 import pygame
 import time
 import sys
@@ -12,6 +13,7 @@ seed(1)
 # if set to 1 do not use CanBus
 standalone = 0
 max_counter = 5000
+(width, height) = (640, 480)
 
 try:
     bus = can.interface.Bus(channel='can0', bustype='socketcan_native', can_filters=[{"can_id": 0, "can_mask": 100, "extended": True}])
@@ -22,14 +24,14 @@ except OSError:
 try:
     pygame.display.init()
     pygame.font.init()
-    (width, height) = (640, 480)
     screen = pygame.display.set_mode((width, height))
     pygame.mouse.set_visible(False)
     FPSCLOCK = pygame.time.Clock()
     #myfont = pygame.font.SysFont('MS Comic Sans', 62)
-    datafont = pygame.font.Font('/home/pi/python/Righteous-Regular.ttf', 16)
-    speedofont = pygame.font.Font('/home/pi/python/DSEG7ClassicMini-Bold.ttf', 96)
-    myfont2 = pygame.font.Font('/home/pi/python/Righteous-Regular.ttf', 36)
+    datafont = pygame.font.Font('/home/pi/python/fonts/Righteous-Regular.ttf', 16)
+    speedofont = pygame.font.Font('/home/pi/python/fonts/DSEG7ClassicMini-Bold.ttf', 96)
+    myfont2 = pygame.font.Font('/home/pi/python/fonts/Righteous-Regular.ttf', 36)
+    update_screen_time = pygame.time.get_ticks()
 except Exception as e:
     print ('Other error or exception')
     print(e)
@@ -38,84 +40,71 @@ except OSError:
     print('Pygame initialisation issue.')
     raise
     exit()
-    
-# Line 1 config
-AIR = 10
-CLT = 10
-AUX = 0
-IGN_ADV = 5
-INJ_DUR = 5
-GEAR = 0
-ECU_MAP = 2
-BATTERY = 12
-RPM = 0
-MAP = 0
-BARO = 0
-TPS = 0
-EGT = 0
-SPEED = 0
-AFR1 = 0
-AFR2 = 0
-shift_point = 5650
 
-map_names = ['Loud','Road','Test']
-x = 50
-y = 50
-width = 40
-height = 60
-vel = 5
-pointer_width = 5
-counter = 0
-update_screen_time = pygame.time.get_ticks()
-screen_update_interval = 100 # minor information update interval in ms
-
-# Define some colors
-BLACK = ( 0, 0, 0)
-WHITE = ( 255, 255, 255)
-GREEN = ( 0, 255, 0)
-RED = ( 255, 0, 0)
-BLUE = ( 0, 0, 255)
-YELLOW = ( 255, 255, 0)
-SILVER = ( 192, 192, 192)
-TURQUOISE = ( 64, 224, 208)
+def warning_lights(tl, bm, tr):
+    # tl = turn left
+    # tr = turn right
+    # bm = beam
+    x = (width/2) - 150
+    y = 340
+    # Left Green Arrow
+    pygame.draw.polygon(screen, OLIVE, ((x, y), (x+30, y-30), (x+30, y-10), (x+70, y-10), (x+70, y+10), (x+30, y+10), (x+30, y+30), (x, y)), width = 1)
+    # Right Green Arrow
+    x = (width/2) + 150
+    pygame.draw.polygon(screen, OLIVE, ((x, y), (x-30, y-30), (x-30, y-10), (x-70, y-10), (x-70, y+10), (x-30, y+10), (x-30, y+30), (x, y)), width = 1)
+    img = myfont2.render( 'BEAM' , True, BLUE)
+    rect = img.get_rect()
+    rect.center = (width/2,y)
+    screen.blit(img,rect)
 
 def fuel_guage():
-    pygame.draw.rect(screen,GREEN,(10,150,35,205),2)
+    # Outline
+    pygame.draw.rect(screen,GREEN,(10,150,35,200),2)
+    # Label
     img = datafont.render( 'Fuel' , True, TURQUOISE, BLACK)
     rect = img.get_rect()
     rect.topleft = (10,360)
     screen.blit(img,rect)
-    pygame.draw.rect(screen, GREEN, pygame.Rect(10, 220, 35, 135))
-        
+    # Level
+    #pygame.draw.rect(screen, GREEN, pygame.Rect(10, 350-200, 35, 200)) # Full
+    pygame.draw.rect(screen, GREEN, pygame.Rect(10, 350-100, 35, 100)) # Half
+    #pygame.draw.rect(screen, GREEN, pygame.Rect(10, 350-5, 35, 5)) # Empty
+
 def oil_pressure():
-    pygame.draw.rect(screen,BLUE,(580,150,35,205),2)
+    # Outline
+    pygame.draw.rect(screen,BLUE,(580,150,35,200),2)
+    # Label
     img = datafont.render( 'Oil P' , True, TURQUOISE, BLACK)
     rect = img.get_rect()
     rect.topleft = (580,360)
     screen.blit(img,rect)
+    #Level
+    #pygame.draw.rect(screen, BLUE, pygame.Rect(580, 350-200, 35, 200)) # Full
+    pygame.draw.rect(screen, BLUE, pygame.Rect(580, 350-100, 35, 100)) # Half
+    #pygame.draw.rect(screen, BLUE, pygame.Rect(580, 350-5, 35, 5)) # Empty
     
 def speed_function(speed):
     # SPEED gauge
     # Speedo 320,200
     img = speedofont.render(str(speed), True, WHITE )
     rect = img.get_rect()
-    rect.topright = (320, 200)
-    pygame.draw.rect(screen,WHITE,(100,180,230,140),3)
+    rect.topright = (320, 140)
+    pygame.draw.rect(screen,WHITE,(100,120,230,140),3)
     screen.blit(img,rect)
 
 def gear_function(gear):
     # Gear Indicator 450,200
-    pygame.draw.rect(screen,WHITE,(440,180,100,140),3)
+    pygame.draw.rect(screen,WHITE,(440,120,100,140),3)
     # Gear Indicator
     img = speedofont.render(str(gear), True, YELLOW, BLACK)
     rect = img.get_rect()
-    rect.topleft = (450, 200)
+    rect.topleft = (450, 140)
     screen.blit(img,rect)
 
 def rpm_line_function(rpm):
     # RPM Range is 0-7500
     # screen width = 640
-    # 640/7500 = 0.85pixels per rpm
+    # 7500 / 640 = 11.7
     # RPM Seperator
     pygame.draw.line(screen, SILVER, (0,65), (640,65), 1)
     pygame.draw.rect(screen, BLACK, pygame.Rect(10, 10, (640), 50))
@@ -127,7 +116,7 @@ def rpm_line_function(rpm):
     if rpm >= shift_point:
         colour = (255,0,0) # Red
     # Drawing Rectangle
-    pygame.draw.rect(screen, colour, pygame.Rect(10, 10, (rpm/12), 50))
+    pygame.draw.rect(screen, colour, pygame.Rect(10, 10, (rpm/11.7), 50))
     textsurface_RPM_bar = myfont2.render(str(rpm), True, WHITE)
     textRect_RPM_bar = textsurface_RPM_bar.get_rect()
     textRect_RPM_bar.center = (80, 30)
@@ -196,6 +185,7 @@ try:
             # only repaint the full screen every xms (See Screen_update_interval)
             screen.fill((0, 0, 0))
             UpdateScreen_Loop()
+            warning_lights(0, 0, 0)
             extra_lines()
             update_screen_time = pygame.time.get_ticks()
     # Instant Update
