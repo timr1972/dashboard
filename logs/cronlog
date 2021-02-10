@@ -1,6 +1,8 @@
-sudo: unable to resolve host bcdash: Temporary failure in name resolution
 pygame 2.0.1 (SDL 2.0.9, Python 3.7.3)
 Hello from the pygame community. https://www.pygame.org/contribute.html
-Main routine starting 
 
-Finished 5000
+Main routine starting, this is now an infinite loop until GIO26 is pulled low...
+
+Locally forced exit.
+
+Exiting and cleaning up.

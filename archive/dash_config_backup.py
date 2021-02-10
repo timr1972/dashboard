@@ -1,0 +1,41 @@
+# dash_config.py
+#
+AIR = 10
+CLT = 10
+AUX = 0
+IGN_ADV = 5
+INJ_DUR = 5
+GEAR = 0
+ECU_MAP = 2
+BATTERY = 12
+RPM = 0
+MAP = 0
+BARO = 0
+IAT = 0
+COIL_ON = 0
+TPS = 0
+EGT = 0
+SPEED = 0
+AFR1 = 0
+AFR2 = 0
+shift_point = 5650
+map_names = ['Loud','Road','Test']
+x = 50
+y = 50
+width = 40
+height = 60
+vel = 5
+pointer_width = 5
+counter = 0
+screen_update_interval = 500
+width = 640
+BLACK = ( 0, 0, 0)
+WHITE = ( 255, 255, 255)
+GREEN = ( 0, 255, 0)
+RED = ( 255, 0, 0)
+BLUE = ( 0, 0, 255)
+YELLOW = ( 255, 255, 0)
+SILVER = ( 192, 192, 192)
+TURQUOISE = ( 64, 224, 208)
+OLIVE = (168, 184, 108)
+

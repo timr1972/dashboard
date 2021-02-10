@@ -1,6 +1,7 @@
 # Import the pygame library and initialise the game engine
 from dash_config import *
 import pygame
+import RPi.GPIO as GPIO
 import time
 import sys
 import os
@@ -18,7 +19,7 @@ max_counter = 5000
 try:
     bus = can.interface.Bus(channel='can0', bustype='socketcan_native', can_filters=[{"can_id": 0, "can_mask": 100, "extended": True}])
 except OSError:
-    print('Cannot find CAN board.')
+    print('\nCannot find CAN board.')
     exit()
 
 try:
@@ -32,14 +33,26 @@ try:
     speedofont = pygame.font.Font('/home/pi/python/fonts/DSEG7ClassicMini-Bold.ttf', 96)
     myfont2 = pygame.font.Font('/home/pi/python/fonts/Righteous-Regular.ttf', 36)
     update_screen_time = pygame.time.get_ticks()
+    # Set up display dimming
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(18, GPIO.OUT)
+    GPIO.setup(20, GPIO.IN, pull_up_down=GPIO.PUD_UP) # Power trigger
+    GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_UP) # TBD
+    GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_UP) # TBD
+    pwm = GPIO.PWM(18, 1000)
+    pwm.start(80) # Start at 80%, range is 0-100
 except Exception as e:
-    print ('Other error or exception')
+    print ('\nOther error or exception')
     print(e)
     exit()
 except OSError:
-    print('Pygame initialisation issue.')
+    print('\nPygame initialisation issue.')
     raise
     exit()
+
+def set_brightness(brightness):
+    #Valid range is 0-100, lower = darker!
+    pwm.ChangeDutyCycle(brightness)
 
 def warning_lights(tl, bm, tr):
     # tl = turn left
@@ -86,7 +99,7 @@ def oil_pressure():
 def speed_function(speed):
     # SPEED gauge
     # Speedo 320,200
-    img = speedofont.render(str(speed), True, WHITE )
+    img = speedofont.render(str(speed), True, WHITE, BLACK )
     rect = img.get_rect()
     rect.topright = (320, 140)
     pygame.draw.rect(screen,WHITE,(100,120,230,140),3)
@@ -151,12 +164,12 @@ def extra_lines():
 def UpdateScreen_Loop():
     # Change this to intermittent changes
     lower_data(0, 0, 'ECU Map: ' + map_names[ECU_MAP] )
-    lower_data(1, 0, 'IAT: ' + str(randint(5, 45)) + ' C') #map_names[ECU_MAP] )
+    lower_data(1, 0, 'IAT: ' + str(IAT) + ' C') # str(randint(5, 45))
     lower_data(2, 0, 'TPS: ' + str(TPS) + ' %')
     lower_data(3, 0, 'P: ' + str(BARO) + ' mbar')
     lower_data(4, 0, 'Coil On: ' + str(COIL_ON) + ' ms')
     lower_data(0, 1, 'Battery: ' + str(BATTERY) + ' v')
-    lower_data(1, 1, 'CLT: ' + str(randint(0, 105)) + ' C') #CLT) + ' C')
+    lower_data(1, 1, 'CLT: ' + str(CLT) + ' C')
     lower_data(2, 1, 'AFR1: ' + str(AFR1))
     lower_data(3, 1, 'Ign: ' + str(IGN_ADV) + ' BTDC')
     lower_data(4, 1, 'INJ: ' + str(INJ_DUR) + ' %')
@@ -178,8 +191,13 @@ run_count = 0
 
 
 try:
-  print('Main routine starting ')
-  while counter < max_counter:
+  print('\nMain routine starting, this is now an infinite loop until GIO26 is pulled low...')
+  while 1!=0:
+    if GPIO.input(26) == 0: # Pulled Low
+        #counter = max_counter
+        print('\nLocally forced exit.')
+        break
+
     if update_screen_time:
         if (pygame.time.get_ticks() - update_screen_time) > screen_update_interval:
             # only repaint the full screen every xms (See Screen_update_interval)
@@ -188,11 +206,10 @@ try:
             warning_lights(0, 0, 0)
             extra_lines()
             update_screen_time = pygame.time.get_ticks()
-    # Instant Update
-    # *** Using dummy data atm ***
-    speed_function(randint(100, 150)) #(SPEED)
-    rpm_line_function(randint(900, 7500)) #RPM)
-    gear_function(randint(1, 6)) #GEAR)
+        # Instant Update
+        speed_function(SPEED) #randint(100, 150)) #(SPEED)
+        rpm_line_function(RPM) #randint(900, 7500)) #RPM)
+        gear_function(GEAR) #randint(1, 6)) #GEAR)
             
     if standalone==0:
         message = bus.recv()
@@ -331,11 +348,10 @@ try:
         #   * 7 Battery
         #
         if message.arbitration_id==0x1003:
-            # Air is char 1
+            # IAT is char 1
             cString = message.data[0]
-            #AIR = HexToDec(str(cString))
-            AIR = cString-40
-            s = 'Air=' + str(AIR) + '*C '
+            IAT = cString-40
+            s = 'IAT=' + str(IAT) + '*C '
             # CLT is char 2
             cString = message.data[1]
             CLT = cString-40
@@ -377,18 +393,23 @@ try:
       #time.sleep(0.5)
 
     pygame.display.flip()
-    FPSCLOCK.tick(30) # set to 30 FPS
-    counter += 1
+    FPSCLOCK.tick(120) # set to 30 FPS
+    #counter += 1
 
 except KeyboardInterrupt:
-  print('\n'), counter
+    print('\nKeyboard Interrupt')
+    pwm.stop()
+    GPIO.setup(18, GPIO.IN)
 
 except Exception as e:
-  print ('Other error or exception')
-  print(e)
+    pwm.stop()
+    GPIO.setup(18, GPIO.IN)
+    print ('\nOther error or exception')
+    print(e)
 
 finally:
-#  GPIO.cleanup()
-  print('\nFinished ' + str(counter))
-  pygame.quit()
-  sys.exit()
+    print('\nExiting and cleaning up.')
+    pygame.quit()
+    pwm.stop()
+    GPIO.setup(18, GPIO.IN)
+    sys.exit()
