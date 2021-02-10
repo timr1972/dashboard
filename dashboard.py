@@ -380,6 +380,45 @@ try:
             cString = message.data[7]
             BATTERY = round(cString/11,2)
             s += ' BATTERY=' + str(BATTERY) + 'v '
+        # 0x1003
+        #   * 0 Key State
+        #   * 1 Left Turn
+        #   * 2 Right Turn
+        #   * 3 Beam
+        #   * 4 Lights
+        #   * 5 Oil Pressure
+        #   * 6 Fuel Level
+        #   * 7 Spare
+        #
+        if message.arbitration_id==0x1009:
+            # Key_sate is char 0
+            cString = message.data[0]
+            KEY_STATE = cString
+            s = 'KEY_STATE=' + str(KEY_STATE)
+            # LEFT_TURN is char 1
+            cString = message.data[1]
+            LEFT_TURN = cString
+            s = 'Left Turn=' + str(LEFT_TURN)
+            # RIGHT_TURN is char 2
+            cString = message.data[2]
+            RIGHT_TURN = cString
+            s = 'Right Turn=' + str(LEFT_TURN)
+            # BEAM is char 3
+            cString = message.data[3]
+            BEAM = cString
+            s = 'Beam=' + str(BEAM)
+            # LIGHTS is char 4
+            cString = message.data[4]
+            LIGHTS = cString
+            s = 'Lights=' + str(Lights)
+            # OIL_PRESSURE is char 5
+            cString = message.data[5]
+            OIL_PRESSURE = cString
+            s = 'Oil Pressure=' + str(OIL_PRESSURE)
+            # FUEL_LEVEL is char 6
+            cString = message.data[6]
+            FUEL_LEVEL = cString
+            s = 'Fuel Level=' + str(FUEL_LEVEL)
         
     else : # Standalone Mode
       # Demo mode so provide data            
