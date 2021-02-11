@@ -39,7 +39,7 @@ git pull git@github.com:timr1972/dashboard.git</br>
 <ul>
 	<li>auto can0</li>
 	<li>iface can0 inet manual</li>
-	<li>    pre-up ip link set $IFACE type can bitrate 1000000 listen-only off</li>
+	<li>    pre-up ip link set $IFACE type can bitrate 100000 listen-only off</li>
 	<li>    up /sbin/ifconfig $IFACE up</li>
 	<li>    down /sbin/ifconfig $IFACE down</li>
 </ul>
