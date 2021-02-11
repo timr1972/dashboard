@@ -381,7 +381,7 @@ try:
             # ECU_MAP = 7
             cString = message.data[6]
             ECU_MAP = cString
-            if ECU_MAP <0 || ECU_MAP >2:
+            if ECU_MAP <0 or ECU_MAP >2:
                 ECU_MAP=2
             s += ' ECU_MAP ' + map_names[ECU_MAP] + ' '
             # Battery = 8
