@@ -72,15 +72,15 @@ def warning_lights(tl, bm, tr):
 
 def fuel_guage():
     # Outline
-    pygame.draw.rect(screen,GREEN,(10,150,35,200),2)
+    pygame.draw.rect(screen,GREEN,(50,400,300,35),2)
     # Label
     img = datafont.render( 'Fuel' , True, TURQUOISE, BLACK)
     rect = img.get_rect()
-    rect.topleft = (10,360)
+    rect.topleft = (50,400)
     screen.blit(img,rect)
     # Level
     #pygame.draw.rect(screen, GREEN, pygame.Rect(10, 350-200, 35, 200)) # Full
-    pygame.draw.rect(screen, GREEN, pygame.Rect(10, 350-100, 35, 100)) # Half
+    pygame.draw.rect(screen, GREEN, pygame.Rect(50, 400, 150, 35)) # Half
     #pygame.draw.rect(screen, GREEN, pygame.Rect(10, 350-5, 35, 5)) # Empty
 
 def oil_pressure():
@@ -97,21 +97,23 @@ def oil_pressure():
     #pygame.draw.rect(screen, BLUE, pygame.Rect(580, 350-5, 35, 5)) # Empty
     
 def speed_function(speed):
+    # Speed Gauge surround
+    pygame.draw.rect(screen,WHITE,(140,140,230,140),3)
     # SPEED gauge
-    # Speedo 320,200
+    # Speedo 150,150
     img = speedofont.render(str(speed), True, WHITE, BLACK )
     rect = img.get_rect()
-    rect.topright = (320, 140)
-    pygame.draw.rect(screen,WHITE,(100,120,230,140),3)
+    rect.topleft = (150, 150)
     screen.blit(img,rect)
 
 def gear_function(gear):
-    # Gear Indicator 450,200
-    pygame.draw.rect(screen,WHITE,(440,120,100,140),3)
+    # Gear change surround
+    pygame.draw.rect(screen,BLACK,(540,150,100,140),3)
     # Gear Indicator
+    # Gear Indicator 550,150
     img = speedofont.render(str(gear), True, YELLOW, BLACK)
     rect = img.get_rect()
-    rect.topleft = (450, 140)
+    rect.topleft = (550, 150)
     screen.blit(img,rect)
 
 def rpm_line_function(rpm):
@@ -203,7 +205,7 @@ try:
             # only repaint the full screen every xms (See Screen_update_interval)
             screen.fill((0, 0, 0))
             UpdateScreen_Loop()
-            warning_lights(0, 0, 0)
+            # warning_lights(0, 0, 0)
             extra_lines()
             update_screen_time = pygame.time.get_ticks()
         # Instant Update
