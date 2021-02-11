@@ -246,8 +246,8 @@ try:
             #
             # BARO 4:5 is built into the Emerald
             #
-            aString = '{:08b}'.format(message.data[2])       # MSB
-            bString = '{:08b}'.format(message.data[3])[::-1] # LSB
+            aString = '{:08b}'.format(message.data[4])       # MSB
+            bString = '{:08b}'.format(message.data[5])[::-1] # LSB
             cString = aString + bString
             BARO = round(int(cString,2)+1000,0)
             s = 'BARO=' + str(BARO) + ' mB '
