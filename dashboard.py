@@ -377,6 +377,8 @@ try:
             # Gear = 6
             cString = message.data[5]
             GEAR = cString
+            if GEAR<0 or GEAR>6:
+                GEAR = 0
             s += ' GEAR ' + str(GEAR) + ' '
             # ECU_MAP = 7
             cString = message.data[6]
