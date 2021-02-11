@@ -117,10 +117,10 @@ def gear_function(gear):
 def rpm_line_function(rpm):
     # RPM Range is 0-7500
     # screen width = 640
-    # 7500 / 640 = 11.7
+    # 7500 / 800 = 9.375
     # RPM Seperator
-    pygame.draw.line(screen, SILVER, (0,65), (640,65), 1)
-    pygame.draw.rect(screen, BLACK, pygame.Rect(10, 10, (640), 50))
+    pygame.draw.line(screen, SILVER, (0,65), (800,65), 1)
+    pygame.draw.rect(screen, BLACK, pygame.Rect(0, 10, (800), 50))
     # Less than shiftpoint minus 500 = Green
     if rpm <= shift_point - 500:
         colour = (0,255,0) # Green
@@ -129,7 +129,7 @@ def rpm_line_function(rpm):
     if rpm >= shift_point:
         colour = (255,0,0) # Red
     # Drawing Rectangle
-    pygame.draw.rect(screen, colour, pygame.Rect(10, 10, (rpm/11.7), 50))
+    pygame.draw.rect(screen, colour, pygame.Rect(0, 10, (rpm/9.375), 50))
     textsurface_RPM_bar = myfont2.render(str(rpm), True, WHITE)
     textRect_RPM_bar = textsurface_RPM_bar.get_rect()
     textRect_RPM_bar.center = (80, 30)
