@@ -1,21 +1,18 @@
-Below is the track of the RPI barebones build instructions
-.
-.
-.
-.
+<h1>Below is the track of the RPI barebones build instructions</h1>
 
-Modify sudo nano /boot/config.txt as per Archive directory
-Modify sudo nano /boot/cmdline.txt and add 'quiet'
+<p>Modify sudo nano /boot/config.txt as per Archive directory</p>
+<p>Modify sudo nano /boot/cmdline.txt and add 'quiet'</p>
 
-Remove extra stuff
-  sudo systemctl disable dphys-swapfile.service
-  sudo systemctl disable keyboard-setup.service
-  sudo systemctl disable apt-daily.service
-  sudo systemctl disable wifi-country.service
-  sudo systemctl disable hciuart.service
-  sudo systemctl disable raspi-config.service
-  sudo systemctl disable avahi-daemon.service
-  sudo systemctl disable triggerhappy.service
+<ul>Remove extra stuff<br>
+<li>  sudo systemctl disable dphys-swapfile.service</li>
+<li>  sudo systemctl disable keyboard-setup.service</li>
+<li>  sudo systemctl disable apt-daily.service</li>
+<li>  sudo systemctl disable wifi-country.service</li>
+<li>  sudo systemctl disable hciuart.service</li>
+<li>  sudo systemctl disable raspi-config.service</li>
+<li>  sudo systemctl disable avahi-daemon.service</li>
+	<li>  sudo systemctl disable triggerhappy.service</li>
+</ul>
 
 sudo apt-get update
 sudo apt-get upgrade -y
