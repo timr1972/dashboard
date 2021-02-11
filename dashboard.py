@@ -54,46 +54,30 @@ def set_brightness(brightness):
     #Valid range is 0-100, lower = darker!
     pwm.ChangeDutyCycle(brightness)
 
-def warning_lights(tl, bm, tr):
-    # tl = turn left
-    # tr = turn right
-    # bm = beam
-    x = (width/2) - 150
-    y = 340
-    # Left Green Arrow
-    pygame.draw.polygon(screen, OLIVE, ((x, y), (x+30, y-30), (x+30, y-10), (x+70, y-10), (x+70, y+10), (x+30, y+10), (x+30, y+30), (x, y)), width = 1)
-    # Right Green Arrow
-    x = (width/2) + 150
-    pygame.draw.polygon(screen, OLIVE, ((x, y), (x-30, y-30), (x-30, y-10), (x-70, y-10), (x-70, y+10), (x-30, y+10), (x-30, y+30), (x, y)), width = 1)
-    img = myfont2.render( 'BEAM' , True, BLUE)
-    rect = img.get_rect()
-    rect.center = (width/2,y)
-    screen.blit(img,rect)
-
 def fuel_guage():
     # Outline
-    pygame.draw.rect(screen,GREEN,(50,400,300,35),2)
+    pygame.draw.rect(screen,GREEN,(50,350,300,35),2)
     # Label
     img = datafont.render( 'Fuel' , True, TURQUOISE, BLACK)
     rect = img.get_rect()
-    rect.topleft = (50,400)
+    rect.center = (200,330)
     screen.blit(img,rect)
     # Level
     #pygame.draw.rect(screen, GREEN, pygame.Rect(10, 350-200, 35, 200)) # Full
-    pygame.draw.rect(screen, GREEN, pygame.Rect(50, 400, 150, 35)) # Half
+    pygame.draw.rect(screen, GREEN, pygame.Rect(50, 350, 150, 35)) # Half
     #pygame.draw.rect(screen, GREEN, pygame.Rect(10, 350-5, 35, 5)) # Empty
 
 def oil_pressure():
     # Outline
-    pygame.draw.rect(screen,BLUE,(580,150,35,200),2)
+    pygame.draw.rect(screen,BLUE,(580,350,300,35),2)
     # Label
     img = datafont.render( 'Oil P' , True, TURQUOISE, BLACK)
     rect = img.get_rect()
-    rect.topleft = (580,360)
+    rect.center = (730,330)
     screen.blit(img,rect)
     #Level
     #pygame.draw.rect(screen, BLUE, pygame.Rect(580, 350-200, 35, 200)) # Full
-    pygame.draw.rect(screen, BLUE, pygame.Rect(580, 350-100, 35, 100)) # Half
+    pygame.draw.rect(screen, BLUE, pygame.Rect(580, 350, 150, 35)) # Half
     #pygame.draw.rect(screen, BLUE, pygame.Rect(580, 350-5, 35, 5)) # Empty
     
 def speed_function(speed):
@@ -143,7 +127,7 @@ def rpm_line_function(rpm):
 # 10            150              290          430           550
 
 # Lower dash positions
-lower_gauge_h = [5, 135, 270, 360, 500]
+lower_gauge_h = [5, 135, 270, 360, 500, 660]
 lower_gauge_v = [420, 455]
 
 def lower_data(top, left, data):
@@ -155,13 +139,15 @@ def lower_data(top, left, data):
 def extra_lines():
     # Lower Details
     line_middle = ((lower_gauge_v[0] +lower_gauge_v[1])/2)+5
-    pygame.draw.line(screen, SILVER, ( 0, lower_gauge_v[0]-10 ), ( 640, lower_gauge_v[0]-10 ), 1)
-    pygame.draw.line(screen, SILVER, ( 0, line_middle ), ( 640, line_middle  ), 1)
-    pygame.draw.line(screen, SILVER, ( 0, lower_gauge_v[1]+20 ), ( 640, lower_gauge_v[1]+20 ), 1)
+    pygame.draw.line(screen, SILVER, ( 0, lower_gauge_v[0]-10 ), ( 800, lower_gauge_v[0]-10 ), 1)
+    pygame.draw.line(screen, SILVER, ( 0, line_middle ), ( 800, line_middle  ), 1)
+    pygame.draw.line(screen, SILVER, ( 0, lower_gauge_v[1]+20 ), ( 800, lower_gauge_v[1]+20 ), 1)
     pygame.draw.line(screen, SILVER, ( lower_gauge_h[1]-5, lower_gauge_v[0]-10 ), (lower_gauge_h[1]-5, lower_gauge_v[1]+20), 1)
     pygame.draw.line(screen, SILVER, ( lower_gauge_h[2]-5, lower_gauge_v[0]-10 ), (lower_gauge_h[2]-5, lower_gauge_v[1]+20), 1) #(285,425), (285,475), 1)
     pygame.draw.line(screen, SILVER, ( lower_gauge_h[3]-5, lower_gauge_v[0]-10 ), (lower_gauge_h[3]-5, lower_gauge_v[1]+20), 1) #(425,425), (425,475), 1)
     pygame.draw.line(screen, SILVER, ( lower_gauge_h[4]-5, lower_gauge_v[0]-10 ), (lower_gauge_h[4]-5, lower_gauge_v[1]+20), 1) #(605,425), (605,475), 1)
+    pygame.draw.line(screen, SILVER, ( lower_gauge_h[5]-5, lower_gauge_v[0]-10 ), (lower_gauge_h[5]-5, lower_gauge_v[1]+20), 1) #
+    
  
 def UpdateScreen_Loop():
     # Change this to intermittent changes
