@@ -34,7 +34,9 @@ cd ~/python
 git init
 git pull git@github.com:timr1972/dashboard.git
 
-python3 ~/python/dashboard.py
-
-sudo apt-get install rpi.gpio
-sudo apt install python3-pip
+and don't forget to modify /etc/network/interfaces
+auto can0
+iface can0 inet manual
+    pre-up ip link set $IFACE type can bitrate 100000 listen-only off
+    up /sbin/ifconfig $IFACE up
+    down /sbin/ifconfig $IFACE down
