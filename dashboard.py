@@ -409,29 +409,29 @@ try:
             RPM = round(cString*7.32)
             
             # LEFT_TURN is char 1
-            cString = message.data[1]
-            LEFT_TURN = cString
-            s = 'Left Turn=' + str(LEFT_TURN)
+            #cString = message.data[1]
+            #LEFT_TURN = cString
+            #s = 'Left Turn=' + str(LEFT_TURN)
             # RIGHT_TURN is char 2
-            cString = message.data[2]
-            RIGHT_TURN = cString
-            s = 'Right Turn=' + str(LEFT_TURN)
+            #cString = message.data[2]
+            #RIGHT_TURN = cString
+            #s = 'Right Turn=' + str(LEFT_TURN)
             # BEAM is char 3
-            cString = message.data[3]
-            BEAM = cString
-            s = 'Beam=' + str(BEAM)
+            #cString = message.data[3]
+            #BEAM = cString
+            #s = 'Beam=' + str(BEAM)
             # LIGHTS is char 4
-            cString = message.data[4]
-            LIGHTS = cString
-            s = 'Lights=' + str(Lights)
+            #cString = message.data[4]
+            #LIGHTS = cString
+            #s = 'Lights=' + str(Lights)
             # OIL_PRESSURE is char 5
-            cString = message.data[5]
-            OIL_PRESSURE = cString
-            s = 'Oil Pressure=' + str(OIL_PRESSURE)
+            #cString = message.data[5]
+            #OIL_PRESSURE = cString
+            #s = 'Oil Pressure=' + str(OIL_PRESSURE)
             # FUEL_LEVEL is char 6
-            cString = message.data[6]
-            FUEL_LEVEL = cString
-            s = 'Fuel Level=' + str(FUEL_LEVEL)
+            #cString = message.data[6]
+            #FUEL_LEVEL = cString
+            #s = 'Fuel Level=' + str(FUEL_LEVEL)
         
     else : # Standalone Mode
       # Demo mode so provide data            
