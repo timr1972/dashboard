@@ -215,6 +215,7 @@ try:
             
     if standalone==0:
         message = bus.recv()
+        print(message)
         # 0x1000
         #  0:1 RPM
         #  2:3 MAP (Manifold Air Pressure)  
@@ -406,32 +407,32 @@ try:
             # 7500/1024 = 7.32
             cString = message.data[0]
             # multiply and round to no digits
-            RPM = round(cString*7.32)
-            
+            RPM = round(cString)*20
             # LEFT_TURN is char 1
-            #cString = message.data[1]
+            cString = message.data[1]
             #LEFT_TURN = cString
             #s = 'Left Turn=' + str(LEFT_TURN)
             # RIGHT_TURN is char 2
-            #cString = message.data[2]
+            cString = message.data[2]
             #RIGHT_TURN = cString
             #s = 'Right Turn=' + str(LEFT_TURN)
             # BEAM is char 3
-            #cString = message.data[3]
+            cString = message.data[3]
             #BEAM = cString
             #s = 'Beam=' + str(BEAM)
             # LIGHTS is char 4
-            #cString = message.data[4]
+            cString = message.data[4]
             #LIGHTS = cString
             #s = 'Lights=' + str(Lights)
             # OIL_PRESSURE is char 5
-            #cString = message.data[5]
+            cString = message.data[5]
             #OIL_PRESSURE = cString
             #s = 'Oil Pressure=' + str(OIL_PRESSURE)
             # FUEL_LEVEL is char 6
-            #cString = message.data[6]
+            cString = message.data[6]
             #FUEL_LEVEL = cString
             #s = 'Fuel Level=' + str(FUEL_LEVEL)
+            cString = message.data[7]
         
     else : # Standalone Mode
       # Demo mode so provide data            
