@@ -227,8 +227,11 @@ try:
             aString = '{:08b}'.format(message.data[0])       # MSB
             bString = '{:08b}'.format(message.data[1])[::-1] # LSB
             cString = aString + bString
-            RPM = round(int(cString,2),0)
+            
+            # removed for now to test ARduino canbus
+            # RPM = round(int(cString,2),0)
             s = 'RPM=' + str(RPM) + ' '
+            
             #
             # MAP 2:3 (Not connected so always 100Kpa)
             #
@@ -380,7 +383,7 @@ try:
             cString = message.data[7]
             BATTERY = round(cString/11,2)
             s += ' BATTERY=' + str(BATTERY) + 'v '
-        # 0x1003
+        # 0x1009
         #   * 0 Key State
         #   * 1 Left Turn
         #   * 2 Right Turn
@@ -392,9 +395,17 @@ try:
         #
         if message.arbitration_id==0x1009:
             # Key_sate is char 0
+            # cString = message.data[0]
+            # KEY_STATE = cString
+            # s = 'KEY_STATE=' + str(KEY_STATE)
+            
+            # added for test
+            # Joystick value is 0 to 1024 (Analogue read)
+            # 7500/1024 = 7.32
             cString = message.data[0]
-            KEY_STATE = cString
-            s = 'KEY_STATE=' + str(KEY_STATE)
+            # multiply and round to no digits
+            RPM = round(cString*7.32)
+            
             # LEFT_TURN is char 1
             cString = message.data[1]
             LEFT_TURN = cString
