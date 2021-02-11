@@ -215,7 +215,7 @@ try:
             
     if standalone==0:
         message = bus.recv()
-        print(message)
+        # print(message)
         # 0x1000
         #  0:1 RPM
         #  2:3 MAP (Manifold Air Pressure)  
@@ -230,7 +230,6 @@ try:
             aString = '{:08b}'.format(message.data[0])       # MSB
             bString = '{:08b}'.format(message.data[1])[::-1] # LSB
             cString = aString + bString
-            
             # removed for now to test ARduino canbus
             # RPM = round(int(cString,2),0)
             s = 'RPM=' + str(RPM) + ' '
@@ -400,18 +399,18 @@ try:
         #   * 6 Fuel Level
         #   * 7 Spare
         #
-        if message.arbitration_id==0x1009:
+        if message.arbitration_id==0x1009 or message.arbitration_id==0xFF0009:
             # Key_sate is char 0
             # cString = message.data[0]
             # KEY_STATE = cString
             # s = 'KEY_STATE=' + str(KEY_STATE)
             
             # added for test
-            # Joystick value is 0 to 1024 (Analogue read)
-            # 7500/1024 = 7.32
+            # Joystick value is 0 to 254 (Analogue read)
+            # 7500 / 254 = 
             cString = message.data[0]
             # multiply and round to no digits
-            RPM = round(cString)*20
+            RPM = round(cString)*30
             # LEFT_TURN is char 1
             cString = message.data[1]
             #LEFT_TURN = cString
