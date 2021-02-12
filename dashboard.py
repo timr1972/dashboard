@@ -17,12 +17,14 @@ max_counter = 5000
 (width, height) = (640, 480)
 
 try:
+    print('\nConnecting to CanBus')
     bus = can.interface.Bus(channel='can0', bustype='socketcan_native', can_filters=[{"can_id": 0, "can_mask": 100, "extended": True}])
 except OSError:
     print('\nCannot find CAN board.')
     exit()
 
 try:
+    print('\nSetting up the display')
     pygame.display.init()
     pygame.font.init()
     screen = pygame.display.set_mode((width, height))
