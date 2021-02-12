@@ -71,15 +71,15 @@ def fuel_guage():
 
 def oil_pressure():
     # Outline
-    pygame.draw.rect(screen,BLUE,(580,350,300,35),2)
+    pygame.draw.rect(screen,BLUE,(480,350,300,35),2)
     # Label
     img = datafont.render( 'Oil P' , True, TURQUOISE, BLACK)
     rect = img.get_rect()
-    rect.center = (730,330)
+    rect.center = (630,330)
     screen.blit(img,rect)
     #Level
     #pygame.draw.rect(screen, BLUE, pygame.Rect(580, 350-200, 35, 200)) # Full
-    pygame.draw.rect(screen, BLUE, pygame.Rect(580, 350, 150, 35)) # Half
+    pygame.draw.rect(screen, BLUE, pygame.Rect(480, 350, 150, 35)) # Half
     #pygame.draw.rect(screen, BLUE, pygame.Rect(580, 350-5, 35, 5)) # Empty
     
 def speed_function(speed):
