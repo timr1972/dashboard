@@ -84,7 +84,7 @@ def oil_pressure():
     
 def speed_function(speed):
     # Speed Gauge surround
-    pygame.draw.rect(screen,WHITE,(140,140,230,140),3)
+    pygame.draw.rect(screen,WHITE,(140,140,250,140),3)
     # SPEED gauge
     # Speedo 150,150
     img = speedofont.render(str(speed), True, WHITE, BLACK )
@@ -94,7 +94,7 @@ def speed_function(speed):
 
 def gear_function(gear):
     # Gear change surround
-    pygame.draw.rect(screen,BLACK,(540,150,100,140),3)
+    pygame.draw.rect(screen,WHITE,(540,150,100,140),3)
     # Gear Indicator
     # Gear Indicator 550,150
     img = speedofont.render(str(gear), True, YELLOW, BLACK)
