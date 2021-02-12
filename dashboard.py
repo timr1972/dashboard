@@ -71,20 +71,20 @@ def fuel_guage():
 
 def oil_pressure():
     # Outline
-    pygame.draw.rect(screen,BLUE,(480,350,300,35),2)
+    pygame.draw.rect(screen,BLUE,(430,350,300,35),2)
     # Label
     img = datafont.render( 'Oil P' , True, TURQUOISE, BLACK)
     rect = img.get_rect()
-    rect.center = (630,330)
+    rect.center = (600,330)
     screen.blit(img,rect)
     #Level
     #pygame.draw.rect(screen, BLUE, pygame.Rect(580, 350-200, 35, 200)) # Full
-    pygame.draw.rect(screen, BLUE, pygame.Rect(480, 350, 150, 35)) # Half
+    pygame.draw.rect(screen, BLUE, pygame.Rect(430, 350, 150, 35)) # Half
     #pygame.draw.rect(screen, BLUE, pygame.Rect(580, 350-5, 35, 5)) # Empty
     
 def speed_function(speed):
     # Speed Gauge surround
-    pygame.draw.rect(screen,WHITE,(140,140,250,140),3)
+    pygame.draw.rect(screen,WHITE,(140,130,250,140),3)
     # SPEED gauge
     # Speedo 150,150
     img = speedofont.render(str(speed), True, WHITE, BLACK )
@@ -94,7 +94,7 @@ def speed_function(speed):
 
 def gear_function(gear):
     # Gear change surround
-    pygame.draw.rect(screen,WHITE,(540,150,100,140),3)
+    pygame.draw.rect(screen,WHITE,(540,130,100,140),3)
     # Gear Indicator
     # Gear Indicator 550,150
     img = speedofont.render(str(gear), True, YELLOW, BLACK)
