@@ -32,6 +32,8 @@ cat ~/.ssh/id_rsa.pub</br>
 	<< Add to git >></br>
 mkdir ~/python</br>
 cd ~/python</br>
+git config --global user.email "{EMAIL}"</br>
+git config --global user.name "{NAME}"</br>
 git init</br>
 git pull git@github.com:timr1972/dashboard.git</br>
 </br>
