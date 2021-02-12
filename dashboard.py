@@ -427,13 +427,12 @@ try:
         
     else : # Standalone Mode
       # Demo mode so provide data            
-      speed_function(randint(0, 150))
-      rpm_line_function(randint(1000, 7500))
-      gear_function(randint(0, 6))
-      ecuMap_function(3)
-      tps_function(randint(0, 99))
-      clt_function(randint(0, 105))
-      air_function(randint(0, 35))
+      SPEED = randint(0, 150)
+      RPM = (randint(1000, 7500)
+      GEAR = randint(0, 6)
+      TPS = randint(0, 99)
+      CLT = randint(0, 105)
+      IAT = randint(0, 35)
       #time.sleep(0.5)
 
     pygame.display.flip()
