@@ -202,7 +202,9 @@ try:
         gear_function(GEAR) #randint(1, 6)) #GEAR)
             
     if standalone==0:
-        message = bus.recv()
+        message = bus.recv(1.0)
+        if message is None:
+            print('Can timeout occurred, no message received.')
         # print(message)
         # 0x1000
         #  0:1 RPM
