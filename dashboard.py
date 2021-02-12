@@ -428,7 +428,7 @@ try:
     else : # Standalone Mode
       # Demo mode so provide data            
       SPEED = randint(0, 150)
-      RPM = (randint(1000, 7500)
+      RPM = randint(1000, 7500)
       GEAR = randint(0, 6)
       TPS = randint(0, 99)
       CLT = randint(0, 105)
