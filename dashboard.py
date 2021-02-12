@@ -205,227 +205,228 @@ try:
         message = bus.recv(1.0)
         if message is None:
             print('Can timeout occurred, no message received.')
-        # print(message)
-        # 0x1000
-        #  0:1 RPM
-        #  2:3 MAP (Manifold Air Pressure)  
-        #  4:5 BARO
-        #  6 TPS %
-        #  7 Coil on time
-        #
-        if message.arbitration_id==0x1000:
-            # 
-            # RPM is 0:1
+        else:
+            # print(message)
+            # 0x1000
+            #  0:1 RPM
+            #  2:3 MAP (Manifold Air Pressure)  
+            #  4:5 BARO
+            #  6 TPS %
+            #  7 Coil on time
             #
-            aString = '{:08b}'.format(message.data[0])       # MSB
-            bString = '{:08b}'.format(message.data[1])[::-1] # LSB
-            cString = aString + bString
-            # removed for now to test ARduino canbus
-            # RPM = round(int(cString,2),0)
-            s = 'RPM=' + str(RPM) + ' '
-            
+            if message.arbitration_id==0x1000:
+                # 
+                # RPM is 0:1
+                #
+                aString = '{:08b}'.format(message.data[0])       # MSB
+                bString = '{:08b}'.format(message.data[1])[::-1] # LSB
+                cString = aString + bString
+                # removed for now to test ARduino canbus
+                # RPM = round(int(cString,2),0)
+                s = 'RPM=' + str(RPM) + ' '
+
+                #
+                # MAP 2:3 (Not connected so always 100Kpa)
+                #
+                aString = '{:08b}'.format(message.data[2])       # MSB
+                bString = '{:08b}'.format(message.data[3])[::-1] # LSB
+                cString = aString + bString
+                MAP = round(int(cString,2)/10,0)
+                s = 'MAP=' + str(MAP) + ' KPa '
+                #
+                # BARO 4:5 is built into the Emerald
+                #
+                aString = '{:08b}'.format(message.data[4])       # MSB
+                bString = '{:08b}'.format(message.data[5])[::-1] # LSB
+                cString = aString + bString
+                BARO = round(int(cString,2)+1000,0)
+                s = 'BARO=' + str(BARO) + ' mB '
+                #
+                # TPS is char 6
+                #
+                cString = message.data[6]
+                TPS = cString
+                s = 'TPS=' + str(TPS) + ' % '
+                #
+                # Coil On Time is char 7
+                #
+                cString = message.data[7]
+                COIL_ON = round(cString*0.0488,2)
+                s = 'Coil On=' + str(COIL_ON) + ' ms '
+
+            # 0x1001
+            #   0:1 EGT
+            #   2:3 Road Speed
+            #   4:5 AFR/Lambda 1
+            #   6:7 AFR/Lambda 2
             #
-            # MAP 2:3 (Not connected so always 100Kpa)
+            if message.arbitration_id==0x1001:
+                #
+                # EGT
+                #
+                aString = '{:08b}'.format(message.data[0])       # MSB
+                bString = '{:08b}'.format(message.data[1])[::-1] # LSB
+                cString = aString + bString
+                EGT = round(int(cString,2),0)
+                s = 'EGT=' + str(EGT) + ' C '
+                #
+                # SPEED 
+                #
+                aString = '{:08b}'.format(message.data[2])       # MSB
+                bString = '{:08b}'.format(message.data[3])[::-1] # LSB
+                cString = aString + bString
+                SPEED = round(int(cString,2)*(2.25/256))
+                s = 'SPEED=' + str(SPEED) + ' MPH '
+                #
+                # AFR1
+                #
+                aString = '{:08b}'.format(message.data[4])       # MSB
+                bString = '{:08b}'.format(message.data[5])[::-1] # LSB
+                cString = aString + bString
+                AFR1 = round(int(cString,2)/10,2)
+                s = 'AFR1=' + str(AFR1) + ' '
+                #
+                # AFR2
+                #
+                aString = '{:08b}'.format(message.data[6])       # MSB
+                bString = '{:08b}'.format(message.data[7])[::-1] # LSB
+                cString = aString + bString
+                AFR2 = round(int(cString,2)/10,2)
+                s = 'AFR2=' + str(AFR2) + ' '
+
+            # 0x1002
+            #   0:1 Status
+            #   2:3 Error
+            #   4:5 Primary Injection
+            #   6:7 Secondary Injection
             #
-            aString = '{:08b}'.format(message.data[2])       # MSB
-            bString = '{:08b}'.format(message.data[3])[::-1] # LSB
-            cString = aString + bString
-            MAP = round(int(cString,2)/10,0)
-            s = 'MAP=' + str(MAP) + ' KPa '
+            if message.arbitration_id==0x1002:
+                #
+                # Status
+                #
+                aString = '{:08b}'.format(message.data[0])       # MSB
+                bString = '{:08b}'.format(message.data[1])[::-1] # LSB
+                cString = aString + bString
+                STATUS = int(cString,2)
+                s = 'STATUS=' + str(STATUS)
+                #
+                # Errors 
+                #
+                aString = '{:08b}'.format(message.data[2])       # MSB
+                bString = '{:08b}'.format(message.data[3])[::-1] # LSB
+                cString = aString + bString
+                ERROR = int(cString,2)
+                s = 'ERROR=' + str(ERROR)
+                #
+                # Pri_inj
+                #
+                aString = '{:08b}'.format(message.data[4])       # MSB
+                bString = '{:08b}'.format(message.data[5])[::-1] # LSB
+                cString = aString + bString
+                pri_inj = round(int(cString,2)* 1.526e-3,2)
+                s = 'pri_inj=' + str(pri_inj) + ' '
+                #
+                # Sec_inj
+                #
+                aString = '{:08b}'.format(message.data[6])       # MSB
+                bString = '{:08b}'.format(message.data[7])[::-1] # LSB
+                cString = aString + bString
+                sec_inj = round(int(cString,2)* 1.526e-3,2)
+                s = 'sec_inj=' + str(sec_inj) + ' '
+            # 0x1003
+            #   * 0 Air Temp
+            #   * 1 Coolant Temp
+            #   * 2 Aux temp
+            #   * 3 Ignition Advance
+            #   * 4 Injector Duration
+            #   * 5 Gear
+            #   * 6 Selected Map
+            #   * 7 Battery
             #
-            # BARO 4:5 is built into the Emerald
+            if message.arbitration_id==0x1003:
+                # IAT is char 1
+                cString = message.data[0]
+                IAT = cString-40
+                s = 'IAT=' + str(IAT) + '*C '
+                # CLT is char 2
+                cString = message.data[1]
+                CLT = cString-40
+                s += ' CLT=' + str(CLT) + '*C '
+                # AUX is not in use
+                cString = message.data[2]
+                AUX = cString-40
+                s += ' AUX=' + str(AUX) + '*C '
+                # Ignition Advance = 4
+                cString = message.data[3]
+                IGN_ADV = cString/2
+                s += ' IGN_ADV=' + str(IGN_ADV) + 'BTDC '
+                # Injector Duration = 5
+                cString = message.data[4]
+                INJ_DUR = cString
+                s += ' INJ_DUR=' + str(IGN_ADV) + '% '
+                # Gear = 6
+                cString = message.data[5]
+                GEAR = cString
+                if GEAR<0 or GEAR>6:
+                    GEAR = 0
+                s += ' GEAR ' + str(GEAR) + ' '
+                # ECU_MAP = 7
+                cString = message.data[6]
+                ECU_MAP = cString
+                if ECU_MAP <0 or ECU_MAP >2:
+                    ECU_MAP=2
+                s += ' ECU_MAP ' + map_names[ECU_MAP] + ' '
+                # Battery = 8
+                cString = message.data[7]
+                BATTERY = round(cString/11,2)
+                s += ' BATTERY=' + str(BATTERY) + 'v '
+            # 0x1009
+            #   * 0 Key State
+            #   * 1 Left Turn
+            #   * 2 Right Turn
+            #   * 3 Beam
+            #   * 4 Lights
+            #   * 5 Oil Pressure
+            #   * 6 Fuel Level
+            #   * 7 Spare
             #
-            aString = '{:08b}'.format(message.data[4])       # MSB
-            bString = '{:08b}'.format(message.data[5])[::-1] # LSB
-            cString = aString + bString
-            BARO = round(int(cString,2)+1000,0)
-            s = 'BARO=' + str(BARO) + ' mB '
-            #
-            # TPS is char 6
-            #
-            cString = message.data[6]
-            TPS = cString
-            s = 'TPS=' + str(TPS) + ' % '
-            #
-            # Coil On Time is char 7
-            #
-            cString = message.data[7]
-            COIL_ON = round(cString*0.0488,2)
-            s = 'Coil On=' + str(COIL_ON) + ' ms '
-        
-        # 0x1001
-        #   0:1 EGT
-        #   2:3 Road Speed
-        #   4:5 AFR/Lambda 1
-        #   6:7 AFR/Lambda 2
-        #
-        if message.arbitration_id==0x1001:
-        	#
-        	# EGT
-        	#
-            aString = '{:08b}'.format(message.data[0])       # MSB
-            bString = '{:08b}'.format(message.data[1])[::-1] # LSB
-            cString = aString + bString
-            EGT = round(int(cString,2),0)
-            s = 'EGT=' + str(EGT) + ' C '
-            #
-            # SPEED 
-            #
-            aString = '{:08b}'.format(message.data[2])       # MSB
-            bString = '{:08b}'.format(message.data[3])[::-1] # LSB
-            cString = aString + bString
-            SPEED = round(int(cString,2)*(2.25/256))
-            s = 'SPEED=' + str(SPEED) + ' MPH '
-            #
-            # AFR1
-            #
-            aString = '{:08b}'.format(message.data[4])       # MSB
-            bString = '{:08b}'.format(message.data[5])[::-1] # LSB
-            cString = aString + bString
-            AFR1 = round(int(cString,2)/10,2)
-            s = 'AFR1=' + str(AFR1) + ' '
-            #
-            # AFR2
-            #
-            aString = '{:08b}'.format(message.data[6])       # MSB
-            bString = '{:08b}'.format(message.data[7])[::-1] # LSB
-            cString = aString + bString
-            AFR2 = round(int(cString,2)/10,2)
-            s = 'AFR2=' + str(AFR2) + ' '
-        
-        # 0x1002
-        #   0:1 Status
-        #   2:3 Error
-        #   4:5 Primary Injection
-        #   6:7 Secondary Injection
-        #
-        if message.arbitration_id==0x1002:
-        	#
-        	# Status
-        	#
-            aString = '{:08b}'.format(message.data[0])       # MSB
-            bString = '{:08b}'.format(message.data[1])[::-1] # LSB
-            cString = aString + bString
-            STATUS = int(cString,2)
-            s = 'STATUS=' + str(STATUS)
-            #
-            # Errors 
-            #
-            aString = '{:08b}'.format(message.data[2])       # MSB
-            bString = '{:08b}'.format(message.data[3])[::-1] # LSB
-            cString = aString + bString
-            ERROR = int(cString,2)
-            s = 'ERROR=' + str(ERROR)
-            #
-            # Pri_inj
-            #
-            aString = '{:08b}'.format(message.data[4])       # MSB
-            bString = '{:08b}'.format(message.data[5])[::-1] # LSB
-            cString = aString + bString
-            pri_inj = round(int(cString,2)* 1.526e-3,2)
-            s = 'pri_inj=' + str(pri_inj) + ' '
-            #
-            # Sec_inj
-            #
-            aString = '{:08b}'.format(message.data[6])       # MSB
-            bString = '{:08b}'.format(message.data[7])[::-1] # LSB
-            cString = aString + bString
-            sec_inj = round(int(cString,2)* 1.526e-3,2)
-            s = 'sec_inj=' + str(sec_inj) + ' '
-        # 0x1003
-        #   * 0 Air Temp
-        #   * 1 Coolant Temp
-        #   * 2 Aux temp
-        #   * 3 Ignition Advance
-        #   * 4 Injector Duration
-        #   * 5 Gear
-        #   * 6 Selected Map
-        #   * 7 Battery
-        #
-        if message.arbitration_id==0x1003:
-            # IAT is char 1
-            cString = message.data[0]
-            IAT = cString-40
-            s = 'IAT=' + str(IAT) + '*C '
-            # CLT is char 2
-            cString = message.data[1]
-            CLT = cString-40
-            s += ' CLT=' + str(CLT) + '*C '
-            # AUX is not in use
-            cString = message.data[2]
-            AUX = cString-40
-            s += ' AUX=' + str(AUX) + '*C '
-            # Ignition Advance = 4
-            cString = message.data[3]
-            IGN_ADV = cString/2
-            s += ' IGN_ADV=' + str(IGN_ADV) + 'BTDC '
-            # Injector Duration = 5
-            cString = message.data[4]
-            INJ_DUR = cString
-            s += ' INJ_DUR=' + str(IGN_ADV) + '% '
-            # Gear = 6
-            cString = message.data[5]
-            GEAR = cString
-            if GEAR<0 or GEAR>6:
-                GEAR = 0
-            s += ' GEAR ' + str(GEAR) + ' '
-            # ECU_MAP = 7
-            cString = message.data[6]
-            ECU_MAP = cString
-            if ECU_MAP <0 or ECU_MAP >2:
-                ECU_MAP=2
-            s += ' ECU_MAP ' + map_names[ECU_MAP] + ' '
-            # Battery = 8
-            cString = message.data[7]
-            BATTERY = round(cString/11,2)
-            s += ' BATTERY=' + str(BATTERY) + 'v '
-        # 0x1009
-        #   * 0 Key State
-        #   * 1 Left Turn
-        #   * 2 Right Turn
-        #   * 3 Beam
-        #   * 4 Lights
-        #   * 5 Oil Pressure
-        #   * 6 Fuel Level
-        #   * 7 Spare
-        #
-        if message.arbitration_id==0x1009 or message.arbitration_id==0xFF0009:
-            # Key_sate is char 0
-            # cString = message.data[0]
-            # KEY_STATE = cString
-            # s = 'KEY_STATE=' + str(KEY_STATE)
-            
-            # added for test
-            # Joystick value is 0 to 254 (Analogue read)
-            # 7500 / 254 = 
-            cString = message.data[0]
-            # multiply and round to no digits
-            RPM = round(cString)*30
-            # LEFT_TURN is char 1
-            cString = message.data[1]
-            #LEFT_TURN = cString
-            #s = 'Left Turn=' + str(LEFT_TURN)
-            # RIGHT_TURN is char 2
-            cString = message.data[2]
-            #RIGHT_TURN = cString
-            #s = 'Right Turn=' + str(LEFT_TURN)
-            # BEAM is char 3
-            cString = message.data[3]
-            #BEAM = cString
-            #s = 'Beam=' + str(BEAM)
-            # LIGHTS is char 4
-            cString = message.data[4]
-            #LIGHTS = cString
-            #s = 'Lights=' + str(Lights)
-            # OIL_PRESSURE is char 5
-            cString = message.data[5]
-            #OIL_PRESSURE = cString
-            #s = 'Oil Pressure=' + str(OIL_PRESSURE)
-            # FUEL_LEVEL is char 6
-            cString = message.data[6]
-            #FUEL_LEVEL = cString
-            #s = 'Fuel Level=' + str(FUEL_LEVEL)
-            cString = message.data[7]
+            if message.arbitration_id==0x1009 or message.arbitration_id==0xFF0009:
+                # Key_sate is char 0
+                # cString = message.data[0]
+                # KEY_STATE = cString
+                # s = 'KEY_STATE=' + str(KEY_STATE)
+
+                # added for test
+                # Joystick value is 0 to 254 (Analogue read)
+                # 7500 / 254 = 
+                cString = message.data[0]
+                # multiply and round to no digits
+                RPM = round(cString)*30
+                # LEFT_TURN is char 1
+                cString = message.data[1]
+                #LEFT_TURN = cString
+                #s = 'Left Turn=' + str(LEFT_TURN)
+                # RIGHT_TURN is char 2
+                cString = message.data[2]
+                #RIGHT_TURN = cString
+                #s = 'Right Turn=' + str(LEFT_TURN)
+                # BEAM is char 3
+                cString = message.data[3]
+                #BEAM = cString
+                #s = 'Beam=' + str(BEAM)
+                # LIGHTS is char 4
+                cString = message.data[4]
+                #LIGHTS = cString
+                #s = 'Lights=' + str(Lights)
+                # OIL_PRESSURE is char 5
+                cString = message.data[5]
+                #OIL_PRESSURE = cString
+                #s = 'Oil Pressure=' + str(OIL_PRESSURE)
+                # FUEL_LEVEL is char 6
+                cString = message.data[6]
+                #FUEL_LEVEL = cString
+                #s = 'Fuel Level=' + str(FUEL_LEVEL)
+                cString = message.data[7]
         
     else : # Standalone Mode
       # Demo mode so provide data            
