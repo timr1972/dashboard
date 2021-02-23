@@ -27,7 +27,7 @@
 <h2> Now setup the GIT stuff</h2>
 mkdir ~/.ssh</br>
 cd ~/.ssh</br>
-ssh-keygen -t rsa -C "tim@russellweb.eu"</br>
+ssh-keygen -t rsa -C "tim@blah.com"</br>
 cat ~/.ssh/id_rsa.pub</br>
 	<< Add to git >></br>
 mkdir ~/python</br>
